@@ -5,6 +5,6 @@ The last X seconds pre-event and Y seconds post-event can be defined.
 Once a recording has been saved there is a non-functional time of 1 second by dafault. This can be altered if relevant.
 
 
-## A small note on installing multiple audio-interface drivers
+## A small note on installing multiple audio-interface drivers (or is it a problem only with the ```oilbird``` conda env??)
 Esp. on windows - this will mess things up. You will need to un-install other audio-interface software and then re-install only the current one again. 
 Also be ready to re-install the drivers and ASIO4ALL multiple times + restart the laptop a bunch of times until somehow everything is right again.
