@@ -33,12 +33,22 @@ help_text = """
 
 file_prefix : text to add at the beginning of a file
 
+hostapi : text, typically one among, MME, WASAPI, 
+
 recdurn : duration of recording to be made in seconds.
 
 hostapi: the host API to use for the audio recording. Either MME, WASAPI, or WDM-KS, defaults to MME
 
 device: the name of the device as it appears on sd.query_devices(), Defaults to 'Microphone (US-16x08)'
+
+monitor_channels : str with the channel numbers (0-indexed) and comma separated 0,1,2,3 . Defaults to [0,-1], the first and last channels
 """
+
+def parse_monitor_channels(inputstr):
+    '''
+    '''
+    chnums = [int(each) for each in inputstr.split(',')]
+    return chnums
 
 parser = argparse.ArgumentParser(description=help_text,)
 parser.add_argument('-hostapi', type=str, help=help_text, default='MME')
@@ -50,8 +60,7 @@ default='Microsoft Sound Mapper - Input')
 parser.add_argument('-samplerate', type=int, help=help_text, default=192000)
 parser.add_argument('-blocksize', type=int, help=help_text, default=2048)
 parser.add_argument('-threshold', type=float, help=help_text, default=0.1)
-parser.add_argument('-monitor_channels', type=list, help=help_text, default=[0,-1])
-parser.add_argument('-downtime', type=float, help=help_text, default=1)
+parser.add_argument('-monitor_channels', type=parse_monitor_channels, help=help_text, default=[8,10])
 args = parser.parse_args()
 
 
@@ -68,8 +77,6 @@ device_num = get_device_indexnumber(device_name=device_name, hostapi=dev_hostapi
 nchannels = sd.query_devices()[device_num]['max_input_channels']
 monitor_channels = args.monitor_channels
 
-S = sd.InputStream(samplerate=fs, blocksize=exp_blocksize, 
-                        device=device_num, channels=nchannels)
 
 
 total_durn = preevent_durn + postevent_durn 
@@ -77,8 +84,11 @@ total_durn = preevent_durn + postevent_durn
 queue_size = int(total_durn/(exp_blocksize/fs))
 data_deque = deque([], maxlen=queue_size)
 #%%
-S.start()
 
+S = sd.InputStream(samplerate=fs, blocksize=exp_blocksize, 
+                        device=device_num, channels=nchannels)
+S.start()
+print('...monitoring started....\n')
 while True:
     data, success = S.read(exp_blocksize)
     data_deque.appendleft((data))

@@ -31,7 +31,7 @@ def get_device_indexnumber(device_name='US-16x08', hostapi='MME'):
     
     tgt_ind_found = False
     for each in device_list:
-        print(each['name'])
+        #print(each['name'])
         name_is_there = device_name in each['name']
         hostapi_is_same = hostapi in all_hostapis[each['hostapi']]
         details_match = np.logical_and(name_is_there, hostapi_is_same) 
