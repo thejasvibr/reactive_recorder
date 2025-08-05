@@ -92,7 +92,7 @@ print('...monitoring started....\n')
 while True:
     data, success = S.read(exp_blocksize)
     data_deque.appendleft((data))
-    above_thresh_channels = monitor_rms(data, monitor_channels,threshold=args.threshold)
+    above_thresh_channels = monitor_peak(data, monitor_channels,threshold=args.threshold)
     if np.any(above_thresh_channels):
         event_time = dt.datetime.now()    
         print(f'event detected,,,{event_time.strftime("%Y-%m-%d_%H-%M-%S")}', )

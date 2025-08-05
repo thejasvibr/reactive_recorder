@@ -59,6 +59,28 @@ def get_device_indexnumber(device_name='US-16x08', hostapi='MME'):
 def rms(X):
     return np.sqrt(np.mean(X**2))
 
+def monitor_peak(data, monitor_channels, threshold=0.1):
+    '''
+    Parameters
+    ----------
+    data : (M,N) np.array
+        M samples x N channels audio buffer
+    monitor_channels : array-like
+        Array-like with channel indices to check if they're
+        above the threshold
+    threshold : float>0
+        The RMS threshold value. If greater or equal, this channel
+        will be True for above_threshold
+    
+    Returns
+    -------
+    above_threshold : array-like
+    '''
+    chwise_peak = np.tile(False, len(monitor_channels))
+    for i,ch in enumerate(monitor_channels):
+        chwise_peak[i] = np.max(abs(data[:,ch])) >=threshold
+    return chwise_peak
+
 def monitor_rms(data, monitor_channels, threshold=0.1):
     '''
     Parameters
