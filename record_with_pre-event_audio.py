@@ -60,7 +60,7 @@ default='Microsoft Sound Mapper - Input')
 parser.add_argument('-samplerate', type=int, help=help_text, default=192000)
 parser.add_argument('-blocksize', type=int, help=help_text, default=2048)
 parser.add_argument('-threshold', type=float, help=help_text, default=0.1)
-parser.add_argument('-monitor_channels', type=parse_monitor_channels, help=help_text, default=[8,10])
+parser.add_argument('-monitor_channels', type=parse_monitor_channels, help=help_text, default=[0,2,3,7,8])
 args = parser.parse_args()
 
 
