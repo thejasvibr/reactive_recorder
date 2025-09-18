@@ -31,17 +31,26 @@ import argparse
 import argparse
 help_text = """
 
-file_prefix : text to add at the beginning of a file
-
-hostapi : text, typically one among, MME, WASAPI, 
-
-recdurn : duration of recording to be made in seconds.
-
 hostapi: the host API to use for the audio recording. Either MME, WASAPI, or WDM-KS, defaults to MME
 
-device: the name of the device as it appears on sd.query_devices(), Defaults to 'Microphone (US-16x08)'
+file_prefix : text to add at the beginning of a file. Defaults to 'multichannel_' with the timestamp after
 
-monitor_channels : str with the channel numbers (0-indexed) and comma separated 0,1,2,3 . Defaults to [0,-1], the first and last channels
+preevent_durn : float>0. Duration in seconds. Defaults to 3 seconds
+
+postevent_durn : float>0. Duration in seconds after the threshold has been crossed. Defaults to 9 seconds. 
+
+devicename: the name of the device as it appears on sd.query_devices()
+
+samplerate : int>0. Sample rate in Hz. Defaults to 192000. 
+
+blocksize : int. Buffer size in samples. Defaults to 2048
+
+threshold : float>0. The peak amplitude (absolute) threshold at which the post-event recording starts. 
+
+monitor_channels : str with the channel numbers (0-indexed) and comma separated e.g. "0,1,2,3" . 
+
+nchannels : int>0. Total number of channels to be used for recording. 
+
 """
 
 def parse_monitor_channels(inputstr):
@@ -55,12 +64,14 @@ parser.add_argument('-hostapi', type=str, help=help_text, default='MME')
 parser.add_argument('-file_prefix', type=str, default='multichannel_')
 parser.add_argument('-preevent_durn', type=float, help=help_text, default=3)
 parser.add_argument('-postevent_durn', type=float, help=help_text, default=9)
-parser.add_argument('-devicename', type=str, help=help_text, 
-default='Microsoft Sound Mapper - Input')
+parser.add_argument('-devicename', type=str, help=help_text)
 parser.add_argument('-samplerate', type=int, help=help_text, default=192000)
 parser.add_argument('-blocksize', type=int, help=help_text, default=2048)
 parser.add_argument('-threshold', type=float, help=help_text, default=0.1)
-parser.add_argument('-monitor_channels', type=parse_monitor_channels, help=help_text, default=[0,2,3,7,8])
+parser.add_argument('-monitor_channels', type=parse_monitor_channels, help=help_text)
+
+parser.add_argument('-nchannels', type=int, help=help_text)
+
 args = parser.parse_args()
 
 
@@ -74,9 +85,8 @@ preevent_durn = args.preevent_durn # seconds
 postevent_durn = args.postevent_durn # seconds
 
 device_num = get_device_indexnumber(device_name=device_name, hostapi=dev_hostapi)
-nchannels = sd.query_devices()[device_num]['max_input_channels']
+nchannels = args.nchannels
 monitor_channels = args.monitor_channels
-
 
 
 total_durn = preevent_durn + postevent_durn 
